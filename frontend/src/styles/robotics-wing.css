@@ -1,0 +1,248 @@
+.robotics-wing-hero {
+  position: relative;
+  display: block;
+  min-height: 0;
+  padding: 120px 4vw 0;
+}
+
+.robotics-wing-hero__top {
+  position: absolute;
+  top: 104px;
+  left: 4vw;
+  right: 4vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  color: var(--muted);
+  font: 10px 'DM Mono', monospace;
+  z-index: 1;
+}
+
+.robotics-wing-hero__top span:last-child {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid rgba(241, 90, 36, .32);
+  border-radius: 4px;
+  background: rgba(241, 90, 36, .08);
+  color: var(--orange);
+  font-weight: 600;
+  text-align: right;
+}
+
+.robotics-wing-hero__intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 36px;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 24px 0 70px;
+}
+
+.robotics-wing-hero__intro > .dev-hero-text {
+  max-width: 700px;
+}
+
+.robotics-wing-hero__intro > .dev-hero-terminal {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  min-width: 0;
+}
+
+.robotics-wing-hero__intro > .dev-hero-terminal > * {
+  width: 100%;
+  max-width: none;
+}
+
+.robotics-wing-systems {
+  width: 100%;
+  padding: 90px clamp(24px, 7vw, 100px) !important;
+}
+
+.robotics-wing-systems__head {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+
+.robotics-wing-systems__head > p,
+.robotics-wing-system p {
+  color: #625e56;
+  line-height: 1.65;
+}
+
+.robotics-wing-systems__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.robotics-wing-system {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 250px;
+  padding: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(16, 17, 15, .14);
+  border-radius: 8px;
+  background: #fffaf2;
+  box-shadow: 0 2px 8px rgba(16, 17, 15, .04);
+  transition: transform .22s ease, border-color .22s ease, background-color .22s ease, box-shadow .22s ease;
+}
+
+.robotics-wing-system::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: var(--orange);
+  content: '';
+  border-radius: 8px 8px 0 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .22s ease;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .robotics-wing-system:hover {
+    transform: translateY(-5px);
+    border-color: rgba(241, 90, 36, .48);
+    background: #fffdf8;
+    box-shadow: 0 14px 28px rgba(16, 17, 15, .1);
+  }
+
+  .robotics-wing-system:hover::before {
+    transform: scaleX(1);
+  }
+}
+
+.robotics-wing-system > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 24px;
+  color: #696b62;
+  font: 10px 'DM Mono', monospace;
+  letter-spacing: .04em;
+}
+
+.robotics-wing-system > div svg {
+  box-sizing: content-box;
+  padding: 8px;
+  color: #a54222;
+  border: 1px solid rgba(241, 90, 36, .22);
+  border-radius: 6px;
+  background: rgba(241, 90, 36, .08);
+}
+
+.robotics-wing-system h3 {
+  display: flex;
+  align-items: flex-end;
+  min-height: 2.4em;
+  margin: 34px 0 10px;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.robotics-wing-system p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .robotics-wing-system,
+  .robotics-wing-system::before {
+    transition: none;
+  }
+}
+
+.robotics-wing-build {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(240px, .7fr) auto;
+  align-items: center;
+  width: 100%;
+  max-width: none;
+  min-height: 300px;
+  margin: 0;
+  gap: 30px;
+  box-sizing: border-box;
+  padding: 72px clamp(24px, 7vw, 100px) !important;
+}
+
+.robotics-wing-build > div > span {
+  font: 10px 'DM Mono', monospace;
+}
+
+.robotics-wing-build h2 {
+  margin: 16px 0 0;
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 1;
+}
+
+.robotics-wing-build h2 em {
+  color: var(--cream);
+  font-style: normal;
+}
+
+.robotics-wing-build > p {
+  max-width: 300px;
+  line-height: 1.6;
+}
+
+.robotics-wing-build > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+  font-size: 11px;
+}
+
+@media (max-width: 800px) {
+  .robotics-wing-hero__intro,
+  .robotics-wing-build {
+    grid-template-columns: 1fr;
+  }
+
+  .robotics-wing-systems__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .robotics-wing-hero {
+    padding: 118px 20px 0;
+  }
+
+  .robotics-wing-hero__top {
+    top: 104px;
+    left: 20px;
+    right: 20px;
+    gap: 12px;
+    font-size: 9px;
+  }
+
+  .robotics-wing-systems {
+    padding: 62px 20px !important;
+  }
+
+  .robotics-wing-build {
+    min-height: 0;
+    padding: 56px 20px !important;
+  }
+}
