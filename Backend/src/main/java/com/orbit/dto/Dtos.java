@@ -2,7 +2,7 @@ package com.orbit.dto;
 
 import jakarta.validation.constraints.*;
 
-public class Dtos {
+public final class Dtos {
 	private Dtos() {}
 	
 	public record AdminLoginRequest(@NotBlank String username, @NotBlank String password) {}
@@ -15,7 +15,7 @@ public class Dtos {
 			@NotBlank @Size(min = 8, max = 100) String password
 			) {}
 	
-	public record AuthResponse(String token, String name, String login, String role) {}
+	public record AuthResponse(String name, String login, String role) {}
 	
 	public record JoinRequestDto(
 			@NotBlank @Size(max = 100) String name,

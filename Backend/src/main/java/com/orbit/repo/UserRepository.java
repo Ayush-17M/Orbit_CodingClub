@@ -11,8 +11,12 @@ import com.orbit.model.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 
 	Optional<User> findByLoginAndRole(String login, User.Role role);
+	
 	Optional<User> findByLogin(String login);
+	
 	boolean existsByLogin(String login);
-	boolean esistsByRole(User.Role role);
+	
+	boolean existsByRole(User.Role role);
+	
 	long countByRole(User.Role role);
 }
