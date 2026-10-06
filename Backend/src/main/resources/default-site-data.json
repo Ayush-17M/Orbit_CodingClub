@@ -1,0 +1,31 @@
+{
+  "hero": {
+    "title": "Orbit Coding Club",
+    "subtitle": "Learn, build, and grow with us.",
+    "ctaText": "Join Us",
+    "ctaLink": "/join"
+  },
+  "intro": {
+    "heading": "Welcome to Orbit",
+    "text": "A place for curious minds to learn coding, build projects, and grow together."
+  },
+  "wings": [],
+  "resources": [],
+  "gallery": [],
+  "about": {
+    "heading": "About Orbit",
+    "text": "We help students explore coding through hands-on learning and collaboration."
+  },
+  "contact": {
+    "email": "hello@orbitclub.dev",
+    "phone": "+91-00000-00000",
+    "address": "India",
+    "mapUrl": "https://maps.google.com",
+    "mapLink": "https://maps.google.com"
+  },
+  "social": {
+    "instagram": "https://instagram.com",
+    "linkedin": "https://linkedin.com",
+    "github": "https://github.com"
+  }
+}
