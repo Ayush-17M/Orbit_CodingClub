@@ -69,7 +69,6 @@ public class User {
 	public Instant getCreatedAt() {
 		return createdAt;
 	}
-
 	
 	
 }

@@ -27,6 +27,10 @@ public class FileStorageService {
 		
 		Files.createDirectories(dir);
 	}
+
+	public Path dir() {
+		return dir;
+	}
 	
 	
 	public String store(MultipartFile file) throws IOException {
@@ -68,7 +72,5 @@ public class FileStorageService {
 		
 		return png || jpg || gif || webp;
 	}
-	
-	
 	
 }

@@ -1,20 +1,28 @@
 package com.orbit.service;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.orbit.dto.Dtos.AuthResponse;
 import com.orbit.dto.Dtos.RegisterRequest;
 import com.orbit.model.User;
 import com.orbit.repo.UserRepository;
+import com.orbit.security.JwtService;
 
 @Service
 public class AuthService {
 	
 	private final UserRepository users;
+	private final PasswordEncoder encoder;
+	private final JwtService jwt;
+	private final LoginAttemptService attempts;
 	
-	public AuthService(UserRepository user) {
+	public AuthService(UserRepository user, PasswordEncoder encoder, JwtService jwt, LoginAttemptService attempts) {
 		this.users = user;
+		this.encoder = encoder;
+		this.jwt = jwt;
+		this.attempts = attempts;
 	}
 	
 	public AuthResponse login(String login, String password, User.Role role) {
@@ -23,7 +31,8 @@ public class AuthService {
 		String key = role + ":" + normalized.toLowerCase();
 		
 		User u = users.findByLoginAndRole(normalized, role).orElse(null);
-		if(u == null) {
+		if(u == null || !encoder.matches(password, u.getPassword())) {
+			attempts.check(key);
 			throw new ApiException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
 		}
 		
@@ -40,7 +49,7 @@ public class AuthService {
 		User u = new User();
 		u.setName(r.name().trim());
 		u.setLogin(email);
-		u.setPassword(r.password());
+		u.setPassword(encoder.encode(r.password()));
 		u.setRole(User.Role.STUDENT);
 		
 		users.save(u);
