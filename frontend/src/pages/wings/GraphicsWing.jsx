@@ -48,12 +48,6 @@ export default function GraphicsWing() {
           ))}
         </div>
       </section>
-
-      <section className="graphics-wing-close section-orange">
-        <span>02 / MAKE IT MATTER</span>
-        <h2>Give good ideas<br />a visual language.</h2>
-        <Link to="/about">WORK WITH THE WING <ArrowUpRight size={16} /></Link>
-      </section>
     </div>
   );
 }

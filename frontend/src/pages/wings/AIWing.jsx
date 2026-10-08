@@ -82,11 +82,6 @@ export default function AIWing() {
         </div>
       </section>
 
-      <section className="ai-wing-build section-orange">
-        <div><span className="ai-wing-kicker">03 / BUILD TO UNDERSTAND</span><h2>Curiosity is a good starting point.<br /><em>A working prototype is better.</em></h2></div>
-        <p>Join model experiments, data challenges, and small product teams. Learn to ask sharper questions before reaching for a larger model.</p>
-        <Link to="/about">MEET THE COMMUNITY <ArrowUpRight size={16} /></Link>
-      </section>
     </div>
   );
 }

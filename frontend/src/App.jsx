@@ -23,6 +23,9 @@ import Wings from './pages/general/Wings';
 import Resources from './pages/general/Resources';
 import Gallery from './pages/general/Gallery';
 import About from './pages/general/About';
+import LoginChoice from './pages/general/LoginChoice';
+import StudentAuth from './pages/student/StudentAuth';
+import StudentDashboard from './pages/student/StudentDashboard';
 import AdminLogin from './pages/admin/AdminLogin';
 import Admin from './pages/admin/Admin';
 
@@ -52,6 +55,12 @@ function Shell() {
           <Route path="/wings/robotics" element={<RoboticsWing />} />
           <Route path="/wings/graphics-design" element={<GraphicsWing />} />
           <Route path="/wings/:slug" element={<WingPage />} />
+
+          <Route path="/login" element={<LoginChoice />} />
+          <Route path="/student" element={<StudentAuth mode="login" />} />
+          <Route path="/student/login" element={<StudentAuth mode="login" />} />
+          <Route path="/student/register" element={<StudentAuth mode="register" />} />
+          <Route path="/student/dashboard" element={<StudentDashboard />} />
 
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/*" element={<Admin data={data} />} />

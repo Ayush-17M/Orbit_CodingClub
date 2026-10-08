@@ -336,18 +336,6 @@ export default function DevelopmentWing() {
       <section id="projects" className="projects-section section-black">
         <SectionHeading dark eyebrow="03 / BUILDS" title="SHIPPED PROJECTS & OPEN SOURCE." />
       </section>
-
-      {/* 5. CALL TO ACTION */}
-      <section className="dev-cta-section section-orange">
-        <div className="dev-cta-content">
-          <div className="eyebrow">CONTRIBUTE & BUILD</div>
-          <h2>HAVE AN IDEA OR WANT TO CODE WITH US?</h2>
-          <p>Join weekly code sprints, collaborate on repositories, and ship real products.</p>
-          <Link to="/about" className="circle-link">
-            JOIN US <ArrowUpRight />
-          </Link>
-        </div>
-      </section>
     </div>
   );
 }

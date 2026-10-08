@@ -197,18 +197,6 @@ export default function DsaWing() {
         <ToolsStrip />
       </section>
 
-      {/* 9. CALL TO ACTION */}
-      <section className="dev-cta-section section-orange">
-        <div className="dev-cta-content">
-          <div className="eyebrow">THINK &amp; SOLVE</div>
-          <h2>READY TO THINK DIFFERENTLY?</h2>
-          <p>Turn abstract logic into real, elegant code.</p>
-          <Link to="/join" className="circle-link">
-            JOIN THE DSA WING <ArrowUpRight />
-          </Link>
-        </div>
-      </section>
-
     </div>
   );
 }

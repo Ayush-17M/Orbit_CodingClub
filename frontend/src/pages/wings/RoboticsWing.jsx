@@ -47,11 +47,6 @@ export default function RoboticsWing() {
         </div>
       </section>
 
-      <section className="robotics-wing-build section-orange">
-        <div><span>02 / PROTOTYPE TOGETHER</span><h2>Make a machine.<br /><em>Make it matter.</em></h2></div>
-        <p>Join hands-on builds, embedded experiments, and team challenges that turn motion into useful work.</p>
-        <Link to="/about">JOIN A BUILD SESSION <ArrowUpRight size={16} /></Link>
-      </section>
     </div>
   );
 }

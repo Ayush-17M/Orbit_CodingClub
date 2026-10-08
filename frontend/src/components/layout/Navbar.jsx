@@ -44,7 +44,7 @@ export default function Navbar({ wings }) {
           <NavLink to="/resources">Resources</NavLink>
           <NavLink to="/gallery">Gallery</NavLink>
           <NavLink to="/about">About</NavLink>
-          <NavLink className="nav-link" to="/admin/login">
+          <NavLink className="nav-link" to="/login">
             Login
           </NavLink>
         </div>
@@ -80,7 +80,7 @@ export default function Navbar({ wings }) {
             About
           </NavLink>
 
-          <NavLink to="/admin/login" onClick={() => setOpen(false)}>
+          <NavLink to="/login" onClick={() => setOpen(false)}>
             Login
           </NavLink>
         </div>
