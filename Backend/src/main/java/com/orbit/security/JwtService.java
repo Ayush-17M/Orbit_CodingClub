@@ -1,12 +1,12 @@
 package com.orbit.security;
 import javax.crypto.SecretKey;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
-@Service 
+@Component
 public class JwtService {
 
   private final SecretKey key;

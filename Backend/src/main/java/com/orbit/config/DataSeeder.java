@@ -2,6 +2,7 @@ package com.orbit.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,9 @@ public class DataSeeder {
   private final String adminUser;
   private final String adminPass;
 
-  public DataSeeder(UserRepository users, PasswordEncoder encoder, SiteService site, String adminUser, String adminPass) {
+  public DataSeeder(UserRepository users, PasswordEncoder encoder, SiteService site,
+      @Value("${orbit.admin.username}") String adminUser,
+      @Value("${orbit.admin.password}") String adminPass) {
     this.users = users;
     this.encoder = encoder;
     this.site = site;
