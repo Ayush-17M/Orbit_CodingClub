@@ -1,8 +1,8 @@
 export const DEFAULT_DATA = {
-    hero: { title: 'BUILD. CREATE. INNOVATE.', description: 'A community of builders exploring AI, development, data, robotics, design and emerging technology.', cta: 'EXPLORE THE WINGS' },
+    hero: { title: 'Orbit Coding Club', description: 'Based at Government Engineering College, Siwan, Orbit brings students together to explore technology, share ideas, and grow through hands-on learning.', cta: 'Explore the wings' },
     intro: {
-        title: 'About us',
-        description: 'ORBIT is a technical and creative community built around learning, experimentation, collaboration and shipping meaningful work.'
+        title: 'A community for curious builders',
+        description: 'From AI and software development to algorithms, robotics, and graphic design, Orbit gives students room to explore what interests them. Learn from peers, share ideas, and put your skills into practice by building together, whether you are just getting started or already have an idea to pursue.'
     },
     wings: [
         { id: 'ai', number: '01', name: 'AI / ML', description: 'Explore artificial intelligence, machine learning and intelligent systems.', icon: 'Brain', accent: 'Neural networks · CV · NLP' },

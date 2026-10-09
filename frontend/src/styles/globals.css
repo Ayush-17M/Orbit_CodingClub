@@ -1080,6 +1080,48 @@ a {
     right: 20px
 }
 
+.home-page .eyebrow,
+.home-page .section-heading>span {
+    font-family: Manrope, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .04em
+}
+
+.home-page .hero h1 {
+    max-width: 800px;
+    margin: 24px 0 28px;
+    font-size: clamp(44px, 7vw, 96px);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -.045em
+}
+
+.home-page .hero-desc {
+    max-width: 620px;
+    font-size: clamp(16px, 1.5vw, 18px);
+    line-height: 1.75
+}
+
+.home-page .section-heading h2 {
+    font-size: clamp(32px, 5vw, 64px);
+    line-height: 1.12;
+    letter-spacing: -.04em
+}
+
+.home-page .intro-copy {
+    max-width: 720px;
+    margin-top: 40px;
+    font-size: clamp(17px, 2vw, 21px);
+    line-height: 1.75;
+    letter-spacing: 0
+}
+
+.home-page .magnetic {
+    font-size: 13px;
+    letter-spacing: .02em
+}
+
 .section-orange {
     background: var(--orange);
     color: var(--black)

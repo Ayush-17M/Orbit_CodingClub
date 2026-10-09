@@ -37,7 +37,7 @@ export default function Home({ data }) {
   }, []);
 
   return (
-    <div ref={ref}>
+    <div ref={ref} className="home-page">
       {/* HERO SECTION */}
       <section className="hero">
         <div className="hero-grid" />
@@ -46,7 +46,7 @@ export default function Home({ data }) {
 
         <div className="hero-copy">
           <p className="eyebrow">
-            TECHNICAL / CREATIVE ORGANIZATION
+            A STUDENT-LED TECHNOLOGY COMMUNITY
           </p>
 
           <h1>
@@ -101,7 +101,7 @@ export default function Home({ data }) {
         <SectionHeading
           dark
           eyebrow="02 / WINGS"
-          title="FIVE DIRECTIONS. ONE COMMUNITY."
+          title="Explore our five wings"
         />
 
         <div className="mini-wings">
