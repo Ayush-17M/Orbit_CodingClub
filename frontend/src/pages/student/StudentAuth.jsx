@@ -1,126 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../../styles/student-auth.css';
+import { fetchApi } from '../../utils/api';
 
-const STORAGE_KEY = 'orbit-student-users';
-const SESSION_KEY = 'orbit-student-session';
 
-function getStoredUsers() {
-  try {
-    const value = localStorage.getItem(STORAGE_KEY);
-    if (!value) {
-      const demoUser = {
-        id: 'demo-student',
-        name: 'Demo Student',
-        email: 'student@orbit.com',
-        college: 'Orbit Campus',
-        password: 'orbit123',
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([demoUser]));
-      return [demoUser];
-    }
-    return JSON.parse(value);
-  } catch {
-    return [];
-  }
-}
+export default function StudentAuth() {
+  const [ useStatus, setStatus ] = useState(0);
 
-export default function StudentAuth({ mode = 'login' }) {
-  const isLogin = mode === 'login';
-  const navigate = useNavigate();
-
-  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
-  const [registerForm, setRegisterForm] = useState({
-    name: '',
-    email: '',
-    college: '',
-    password: '',
-    confirmPassword: '',
-  });
-  const [status, setStatus] = useState({ type: '', message: '' });
-
-  const updateLoginForm = (event) => {
-    const { name, value } = event.target;
-    setLoginForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const updateRegisterForm = (event) => {
-    const { name, value } = event.target;
-    setRegisterForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleLogin = (event) => {
+  // Inside handleLogin:
+  const handleLogin = async (event) {
     event.preventDefault();
-    setStatus({ type: '', message: '' });
+    setStatus({ type: '', message: ''});
 
-    const users = getStoredUsers();
-    const match = users.find(
-      (user) =>
-        user.email.trim().toLowerCase() === loginForm.email.trim().toLowerCase() &&
-        user.password === loginForm.password
-    );
-
-    if (!match) {
-      setStatus({
-        type: 'error',
-        message: 'Invalid email or password. Try the demo account or create a new one.',
+    try {
+      const data = await fetchApi('/auth/sutdent/login', {
+        method: 'POST',
+        body: JSON.stringify({email: loginForm.email, password: loginForm.password })
       });
-      return;
-    }
+      
+      // store user data and token
+      sessionStorage.setItem('orbit-student-session', JSON.stringify(data));
+      sessionStorage.setItem('orbit-token', data.token);
 
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(match));
-    setStatus({ type: 'success', message: 'Login successful. Redirecting...' });
-    setTimeout(() => navigate('/student/dashboard'), 600);
-  };
+      setStatus({ type: 'success', message: 'Login successful. Redirection...'});
+      
+      setTimeout(() => navigation('/student/dashboard'), 600);
 
-  const handleRegister = (event) => {
-    event.preventDefault();
-    setStatus({ type: '', message: '' });
-
-    const users = getStoredUsers();
-    const name = registerForm.name.trim();
-    const email = registerForm.email.trim();
-    const college = registerForm.college.trim();
-
-    if (!name || !email || !college || !registerForm.password || !registerForm.confirmPassword) {
-      setStatus({ type: 'error', message: 'Please fill in all fields.' });
-      return;
-    }
-
-    if (registerForm.password.length < 6) {
-      setStatus({ type: 'error', message: 'Password should be at least 6 characters long.' });
-      return;
-    }
-
-    if (registerForm.password !== registerForm.confirmPassword) {
-      setStatus({ type: 'error', message: 'Passwords do not match.' });
-      return;
-    }
-
-    const existing = users.some(
-      (user) => user.email.trim().toLowerCase() === email.toLowerCase()
-    );
-
-    if (existing) {
-      setStatus({ type: 'error', message: 'An account with this email already exists.' });
-      return;
-    }
-
-    const nextUser = {
-      id: crypto.randomUUID ? crypto.randomUUID() : `student-${Date.now()}`,
-      name,
-      email: email.toLowerCase(),
-      college,
-      password: registerForm.password,
+    } catch (error) {
+      setStatus({type: 'error', message: error.message || 'Invalid credentials' });
     };
+  }
 
-    const updatedUsers = [...users, nextUser];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedUsers));
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(nextUser));
+  // Inside handleRegister:
+  const handleRegister = async (event) => {
+    event.preventDefault();
 
+    try {
+      const data = await fetchApi('/auth/student/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: registerForm.name;
+          email: registerForm.email,
+          password: registerForm.password
+        }),
+      });
+
+      sessionStorage.setItem('orbit-student-session', JSON.stringify(data));
     setStatus({ type: 'success', message: 'Account created successfully. Redirecting...' });
     setTimeout(() => navigate('/student/dashboard'), 700);
-  };
+  } catch (error) {
+    setStatus({ type: 'error', message: error.message });
+    }
+
+  }
+ 
 
   return (
     <div className="student-auth-shell">
