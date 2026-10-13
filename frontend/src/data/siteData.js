@@ -5,11 +5,11 @@ export const DEFAULT_DATA = {
         description: 'From AI and software development to algorithms, robotics, and graphic design, Orbit gives students room to explore what interests them. Learn from peers, share ideas, and put your skills into practice by building together, whether you are just getting started or already have an idea to pursue.'
     },
     wings: [
-        { id: 'ai', number: '01', name: 'AI / ML', description: 'Explore artificial intelligence, machine learning and intelligent systems.', icon: 'Brain', accent: 'Neural networks · CV · NLP' },
-        { id: 'dev', number: '02', name: 'DEVELOPMENT', description: 'Build modern web, app and full-stack experiences with practical engineering.', icon: 'Code2', accent: 'Frontend · Full Stack · Apps' },
-        { id: 'dsa', number: '03', name: 'DSA', description: 'Master data structures, algorithms, competitive programming and problem solving.', icon: 'Binary', accent: 'Algorithms · CP · Problem Solving' },
-        { id: 'robotics', number: '04', name: 'ROBOTICS', description: 'Prototype intelligent machines through sensors, control, embedded systems and 3D thinking.', icon: 'Bot', accent: 'Embedded · Sensors · Automation' },
-        { id: 'design', number: '05', name: 'GRAPHICS DESIGNING', description: 'Shape interfaces, identities and motion through visual systems and creative direction.', icon: 'PenTool', accent: 'UI/UX · Branding · Motion' }
+        { id: 'ai', number: '01', name: 'AI / ML', description: 'Explore artificial intelligence, machine learning and intelligent systems.', icon: 'Brain', accent: 'Neural networks · CV · NLP', coordinator: '' },
+        { id: 'dev', number: '02', name: 'DEVELOPMENT', description: 'Build modern web, app and full-stack experiences with practical engineering.', icon: 'Code2', accent: 'Frontend · Full Stack · Apps', coordinator: '' },
+        { id: 'dsa', number: '03', name: 'DSA', description: 'Master data structures, algorithms, competitive programming and problem solving.', icon: 'Binary', accent: 'Algorithms · CP · Problem Solving', coordinator: '' },
+        { id: 'robotics', number: '04', name: 'ROBOTICS', description: 'Prototype intelligent machines through sensors, control, embedded systems and 3D thinking.', icon: 'Bot', accent: 'Embedded · Sensors · Automation', coordinator: '' },
+        { id: 'design', number: '05', name: 'GRAPHICS DESIGNING', description: 'Shape interfaces, identities and motion through visual systems and creative direction.', icon: 'PenTool', accent: 'UI/UX · Branding · Motion', coordinator: '' }
     ],
     resources: [
         { id: 1, category: 'DSA', title: 'DSA ROADMAP', description: 'Beginner-to-advanced learning path for data structures and algorithms.', date: 'Editable date', type: 'ROADMAP', url: 'https://roadmap.sh/pdfs/roadmaps/datastructures-and-algorithms.pdf' },

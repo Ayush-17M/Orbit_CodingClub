@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const USER = 'admin';
-const PASS = 'techkshitiz-demo';
+import { fetchApi } from '../../utils/api';
 
 export default function AdminLogin() {
   const [u, setU] = useState('');
@@ -11,14 +9,20 @@ export default function AdminLogin() {
 
   const nav = useNavigate();
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
+    setErr('');
+    try {
+      const data = await fetchApi('/auth/admin/login', {
+        method: 'POST',
+        body: JSON.stringify({ username: u, password: p }),
+      });
 
-    if (u === USER && p === PASS) {
+      sessionStorage.setItem('orbit_token', data.token);
       sessionStorage.setItem('admin-auth', '1');
       nav('/admin');
-    } else {
-      setErr('Invalid demo credentials.');
+    } catch (error) {
+      setErr(error.message || 'Invalid admin credentials.');
     }
   };
 
@@ -26,7 +30,7 @@ export default function AdminLogin() {
     <div className="admin-login section-black">
       <form onSubmit={submit}>
         <span className="eyebrow">
-          ADMIN / DEMO
+          ADMIN ACCESS
         </span>
 
         <h1>
@@ -34,8 +38,7 @@ export default function AdminLogin() {
         </h1>
 
         <p>
-          Frontend-only authentication.
-          Connect real auth before production.
+          Sign in with the admin credentials configured for the backend.
         </p>
 
         <label>
@@ -71,11 +74,7 @@ export default function AdminLogin() {
         </button>
 
         <small>
-          Demo credentials are configurable in{' '}
-          <code>
-            src/pages/AdminLogin.jsx
-          </code>
-          .
+          Admin credentials are configured on the backend.
         </small>
       </form>
     </div>

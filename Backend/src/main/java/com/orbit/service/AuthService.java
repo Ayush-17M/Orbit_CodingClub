@@ -57,6 +57,7 @@ public class AuthService {
 		
 	}
 	private AuthResponse toResponse(User u) {
-		return new AuthResponse(u.getName(), u.getPassword(),u.getRole().name());
+		return new AuthResponse(u.getName(), u.getLogin(), u.getRole().name(),
+				jwt.issue(u.getLogin(), u.getRole().name()));
 	}
 }

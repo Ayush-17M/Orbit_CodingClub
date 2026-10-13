@@ -25,6 +25,7 @@ export default function StudentDashboard() {
 
   const handleLogout = () => {
     sessionStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem('orbit_token');
     navigate('/student/login', { replace: true });
   };
 
@@ -43,7 +44,7 @@ export default function StudentDashboard() {
         </div>
 
         <p className="student-dashboard-meta">
-          You are signed in as <strong>{user.email}</strong> from <strong>{user.college}</strong>.
+          You are signed in as <strong>{user.email || user.login}</strong>.
         </p>
 
         <div className="student-dashboard-grid">

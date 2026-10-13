@@ -15,7 +15,7 @@ public final class Dtos {
 			@NotBlank @Size(min = 8, max = 100) String password
 			) {}
 	
-	public record AuthResponse(String name, String login, String role) {}
+	public record AuthResponse(String name, String login, String role, String token) {}
 	
 	public record JoinRequestDto(
 			@NotBlank @Size(max = 100) String name,

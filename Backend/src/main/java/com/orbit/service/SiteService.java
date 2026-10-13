@@ -126,7 +126,9 @@ public JsonNode get() {
 		}
 
 		String s = v.asText().trim().toLowerCase();
-		if (!(s.startsWith("https://") || s.startsWith("/uploads/")))
+		if (!(s.startsWith("http://") || s.startsWith("https://")
+				|| s.startsWith("/uploads/") || s.startsWith("/api/images/")
+				|| s.startsWith("/images/")))
 			bad("Invalid URL in '" + field + "' . Use http(s):// links or an uploaded image.");
 	}
 

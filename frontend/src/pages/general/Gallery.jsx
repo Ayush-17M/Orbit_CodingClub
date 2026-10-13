@@ -3,6 +3,7 @@ import { X, ArrowUpRight } from 'lucide-react';
 
 import useGsap from '../../hooks/useGsap';
 import SectionHeading from '../../components/ui/SectionHeading';
+import { resolveAssetUrl } from '../../utils/api';
 
 export default function Gallery({ data }) {
   const [filter, setFilter] = useState('ALL');
@@ -21,6 +22,9 @@ export default function Gallery({ data }) {
     (item) =>
       filter === 'ALL' || item.category === filter
   );
+  const activeWing = active?.category === 'EVENTS'
+    ? data.wings.find((wing) => wing.id === active.wingId)
+    : null;
 
   const ref = useGsap(
     (g, ST, root) => {
@@ -74,7 +78,7 @@ export default function Gallery({ data }) {
           >
             {item.image ? (
               <img
-                src={item.image}
+                src={resolveAssetUrl(item.image)}
                 alt={item.title}
               />
             ) : (
@@ -110,7 +114,7 @@ export default function Gallery({ data }) {
 
           {active.image && (
             <img
-              src={active.image}
+              src={resolveAssetUrl(active.image)}
               alt={active.title}
             />
           )}
@@ -120,7 +124,14 @@ export default function Gallery({ data }) {
 
             <h2>{active.title}</h2>
 
+            {active.date && <p>{active.date}</p>}
             <p>{active.description}</p>
+            {active.category === 'EVENTS' && (
+              <p>
+                {activeWing?.name || 'Orbit event'}
+                {activeWing?.coordinator ? ` · Coordinator: ${activeWing.coordinator}` : ''}
+              </p>
+            )}
           </div>
         </div>
       )}

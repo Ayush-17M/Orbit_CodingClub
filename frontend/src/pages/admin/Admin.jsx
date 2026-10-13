@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { saveData, resetData } from '../../data/siteData';
+import { DEFAULT_DATA } from '../../data/siteData';
+import { fetchApi, resolveAssetUrl } from '../../utils/api';
 
 const tabs = [
   'Dashboard',
   'Home',
   'Wings',
+  'Events',
   'Resources',
   'Gallery',
   'About',
@@ -14,14 +16,16 @@ const tabs = [
 ];
 
 export default function Admin({ data }) {
-  if (sessionStorage.getItem('admin-auth') !== '1') {
+  const [tab, setTab] = useState('Dashboard');
+  const [draft, setDraft] = useState(() => structuredClone(data || DEFAULT_DATA));
+
+  useEffect(() => {
+    setDraft(structuredClone(data || DEFAULT_DATA));
+  }, [data]);
+
+  if (sessionStorage.getItem('admin-auth') !== '1' || !sessionStorage.getItem('orbit_token')) {
     return <Navigate to="/admin/login" replace />;
   }
-
-  const [tab, setTab] = useState('Dashboard');
-  const [draft, setDraft] = useState(
-    structuredClone(data)
-  );
 
   const patch = (path, value) => {
     const next = structuredClone(draft);
@@ -39,12 +43,26 @@ export default function Admin({ data }) {
     setDraft(next);
   };
 
-  const commit = () => {
-    saveData(draft);
+  const commit = async (content = draft) => {
+    try {
+      await fetchApi('/admin/site', {
+        method: 'PUT',
+        body: JSON.stringify(content),
+      });
+
+      setDraft(structuredClone(content));
+      window.dispatchEvent(new Event('site-data-updated'));
+      alert('Site content saved successfully.');
+      return true;
+    } catch (error) {
+      alert(`Failed to save: ${error.message}`);
+      return false;
+    }
   };
 
   const logout = () => {
     sessionStorage.removeItem('admin-auth');
+    sessionStorage.removeItem('orbit_token');
     window.location.href = '/admin/login';
   };
 
@@ -94,8 +112,9 @@ export default function Admin({ data }) {
   };
 
   const reset = () => {
-    const defaults = resetData();
-    setDraft(structuredClone(defaults));
+    if (window.confirm('Reset site content to its default values?')) {
+      commit(structuredClone(DEFAULT_DATA));
+    }
   };
 
   return (
@@ -128,7 +147,7 @@ export default function Admin({ data }) {
         <div className="admin-head">
           <div>
             <span className="eyebrow">
-              FRONTEND CMS
+              ORBIT CMS
             </span>
 
             <h1>{tab}</h1>
@@ -146,9 +165,7 @@ export default function Admin({ data }) {
         </div>
 
         <div className="demo-warning">
-          Frontend demo admin — connect a real
-          authentication/backend system before
-          production use.
+          Admin-only content management. Changes are saved to the backend database.
         </div>
 
         {tab === 'Dashboard' && (
@@ -166,6 +183,23 @@ export default function Admin({ data }) {
           <WingsEditor
             data={draft}
             setData={setDraft}
+          />
+        )}
+
+        {tab === 'Events' && (
+          <EventsEditor
+            events={draft.gallery.filter((item) => item.category === 'EVENTS')}
+            wings={draft.wings}
+            onSave={(events) => {
+              const next = {
+                ...draft,
+                gallery: [
+                  ...draft.gallery.filter((item) => item.category !== 'EVENTS'),
+                  ...events,
+                ],
+              };
+              return commit(next);
+            }}
           />
         )}
 
@@ -266,9 +300,8 @@ function Dashboard({ data }) {
         <span>RECENT ACTIVITY</span>
 
         <p>
-          Content is stored locally in this
-          browser. Public pages render from the
-          same localStorage dataset.
+          Site content and wing coordinators are stored in the backend database.
+          Uploaded event pictures are stored there as well.
         </p>
       </div>
     </div>
@@ -433,6 +466,19 @@ function WingsEditor({
               });
             }}
           />
+
+          <Input
+            label="Wing coordinator"
+            value={wing.coordinator}
+            onChange={(value) => {
+              const wings = structuredClone(data.wings);
+              wings[index].coordinator = value;
+              setData({
+                ...data,
+                wings
+              });
+            }}
+          />
         </div>
       ))}
     </div>
@@ -463,15 +509,30 @@ function ListEditor({
     ]);
   };
 
-  const updateItem = (
-    index,
-    key,
-    value
-  ) => {
+  const handleImageUpload = async (event, index) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await fetchApi('/admin/uploads', {
+        method: 'POST',
+        body: formData,
+      });
+
+      updateItem(index, 'image', response.url);
+    } catch (error) {
+      alert('Failed to upload image: ' + error.message);
+    } finally {
+      event.target.value = '';
+    }
+  };
+
+  const updateItem = (index, key, value) => {
     const next = structuredClone(data);
-
     next[index][key] = value;
-
     setData(next);
   };
 
@@ -535,16 +596,10 @@ function ListEditor({
             multi
           />
 
-          <Input
-            label="Image / URL"
-            value={item.image}
-            onChange={(value) =>
-              updateItem(
-                index,
-                'image',
-                value
-              )
-            }
+          <input
+            type="file"
+            accept="image/png, image/jpeg, image/webp, image/gif"
+            onChange={(e) => handleImageUpload(e, index)}
           />
 
           <Input
@@ -571,6 +626,217 @@ function ListEditor({
       ))}
     </div>
   );
+}
+
+function EventsEditor({ events, wings, onSave }) {
+  const [editingId, setEditingId] = useState(null);
+  const [form, setForm] = useState(() => createEventForm(wings));
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const selectedWing = wings.find((wing) => wing.id === form.wingId);
+
+  const startNewEvent = () => {
+    setEditingId(null);
+    setForm(createEventForm(wings));
+    setError('');
+  };
+
+  const editEvent = (event) => {
+    setEditingId(event.id);
+    setForm({
+      title: event.title || '',
+      date: event.date || '',
+      description: event.description || '',
+      image: event.image || '',
+      wingId: event.wingId || wings[0]?.id || '',
+    });
+    setError('');
+  };
+
+  const updateField = (field, value) => {
+    setForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const uploadImage = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setBusy(true);
+    setError('');
+    const body = new FormData();
+    body.append('file', file);
+
+    try {
+      const result = await fetchApi('/admin/uploads', {
+        method: 'POST',
+        body,
+      });
+      updateField('image', result.url);
+    } catch (uploadError) {
+      setError(`Image upload failed: ${uploadError.message}`);
+    } finally {
+      setBusy(false);
+      event.target.value = '';
+    }
+  };
+
+  const saveEvent = async (event) => {
+    event.preventDefault();
+    setError('');
+
+    if (!form.title.trim() || !form.date.trim() || !form.description.trim()) {
+      setError('Enter the event title, date, and description.');
+      return;
+    }
+    if (!form.image) {
+      setError('Upload an event picture before saving.');
+      return;
+    }
+    if (wings.length && !form.wingId) {
+      setError('Choose the wing responsible for this event.');
+      return;
+    }
+
+    const existing = events.find((item) => item.id === editingId);
+    const item = {
+      ...(existing || {}),
+      id: editingId ?? Date.now(),
+      title: form.title.trim(),
+      date: form.date.trim(),
+      description: form.description.trim(),
+      category: 'EVENTS',
+      image: form.image,
+      wingId: form.wingId,
+    };
+    const nextEvents = editingId === null
+      ? [...events, item]
+      : events.map((current) => current.id === editingId ? item : current);
+
+    setBusy(true);
+    try {
+      if (!await onSave(nextEvents)) return;
+
+      const oldImageId = getStoredImageId(existing?.image);
+      const newImageId = getStoredImageId(item.image);
+      if (oldImageId && oldImageId !== newImageId) {
+        await fetchApi(`/admin/uploads/${oldImageId}`, { method: 'DELETE' });
+      }
+
+      startNewEvent();
+    } catch (saveError) {
+      setError(`Event saved, but the previous image could not be removed: ${saveError.message}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const deleteEvent = async (item) => {
+    if (!window.confirm(`Delete "${item.title}"?`)) return;
+
+    setError('');
+    setBusy(true);
+    try {
+      if (!await onSave(events.filter((event) => event.id !== item.id))) return;
+
+      const imageId = getStoredImageId(item.image);
+      if (imageId) {
+        await fetchApi(`/admin/uploads/${imageId}`, { method: 'DELETE' });
+      }
+      if (editingId === item.id) startNewEvent();
+    } catch (deleteError) {
+      setError(`Event was removed, but its picture could not be deleted: ${deleteError.message}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="events-admin">
+      <form className="event-form" onSubmit={saveEvent}>
+        <div className="event-form-heading">
+          <div>
+            <span className="eyebrow">EVENT MANAGEMENT</span>
+            <h2>{editingId === null ? 'ADD AN EVENT' : 'UPDATE EVENT'}</h2>
+          </div>
+          {editingId !== null && (
+            <button type="button" className="event-secondary" onClick={startNewEvent}>
+              CANCEL EDIT
+            </button>
+          )}
+        </div>
+
+        <div className="event-form-grid">
+          <Input label="Event title" value={form.title} onChange={(value) => updateField('title', value)} />
+          <Input label="Event date" value={form.date} onChange={(value) => updateField('date', value)} />
+          <label className="editor-field">
+            <span>Wing</span>
+            <select value={form.wingId} onChange={(event) => updateField('wingId', event.target.value)}>
+              <option value="">Select a wing</option>
+              {wings.map((wing) => (
+                <option key={wing.id} value={wing.id}>{wing.name}</option>
+              ))}
+            </select>
+          </label>
+          <div className="event-coordinator">
+            <span>Wing coordinator</span>
+            <strong>{selectedWing?.coordinator || 'Set the coordinator in the Wings tab'}</strong>
+          </div>
+          <div className="event-description">
+            <Input label="Description" value={form.description} onChange={(value) => updateField('description', value)} multi />
+          </div>
+          <label className="editor-field event-image-upload">
+            <span>Event picture (PNG, JPG, WEBP, GIF)</span>
+            <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={uploadImage} />
+          </label>
+          {form.image && (
+            <img className="event-image-preview" src={resolveAssetUrl(form.image)} alt="Event preview" />
+          )}
+        </div>
+
+        {error && <p className="event-form-error" role="alert">{error}</p>}
+        <button className="event-primary" type="submit" disabled={busy}>
+          {busy ? 'SAVING...' : editingId === null ? 'ADD EVENT' : 'UPDATE EVENT'}
+        </button>
+      </form>
+
+      <section className="event-records" aria-labelledby="event-records-heading">
+        <h2 id="event-records-heading">SAVED EVENTS ({events.length})</h2>
+        {events.length === 0 && <p>No events yet. Add an event above.</p>}
+        {events.map((event) => {
+          const wing = wings.find((item) => item.id === event.wingId);
+          return (
+            <article className="event-record" key={event.id}>
+              {event.image && <img src={resolveAssetUrl(event.image)} alt="" />}
+              <div className="event-record-details">
+                <strong>{event.title}</strong>
+                <span>{event.date} · {wing?.name || 'No wing assigned'}</span>
+                <span>Coordinator: {wing?.coordinator || 'Not set'}</span>
+              </div>
+              <div className="event-record-actions">
+                <button type="button" onClick={() => editEvent(event)} disabled={busy}>EDIT</button>
+                <button type="button" onClick={() => deleteEvent(event)} disabled={busy}>DELETE</button>
+              </div>
+            </article>
+          );
+        })}
+      </section>
+    </div>
+  );
+}
+
+function createEventForm(wings) {
+  return {
+    title: '',
+    date: '',
+    description: '',
+    image: '',
+    wingId: wings[0]?.id || '',
+  };
+}
+
+function getStoredImageId(image) {
+  return image?.match(/^\/api\/images\/([0-9a-f-]+)$/i)?.[1] || null;
 }
 
 /* =========================

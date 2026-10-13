@@ -3,6 +3,7 @@ package com.orbit.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +13,7 @@ import com.orbit.service.SiteService;
 
 
 @Component 
-public class DataSeeder {
+public class DataSeeder implements CommandLineRunner {
 
   private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
 
@@ -33,6 +34,7 @@ public class DataSeeder {
     this.adminPass = adminPass;
   }
 
+  @Override
   public void run(String... args) {
     if(!users.existsByRole(User.Role.ADMIN)) {
       User admin = new User();

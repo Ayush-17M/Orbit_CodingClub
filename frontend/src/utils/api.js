@@ -1,4 +1,5 @@
-const API_BASE = 'https://localhost:8080/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+const API_ORIGIN = new URL(API_BASE).origin;
 
 export async function fetchApi(endpoint, options = {}) {
   const token = sessionStorage.getItem('orbit_token');
@@ -20,5 +21,12 @@ export async function fetchApi(endpoint, options = {}) {
     throw new Error(errorMsg || 'API request failed');
   }
 
+  if (response.status === 204) return null;
   return response.json();
+}
+
+export function resolveAssetUrl(url) {
+  return url?.startsWith('/api/') || url?.startsWith('/uploads/')
+    ? `${API_ORIGIN}${url}`
+    : url;
 }

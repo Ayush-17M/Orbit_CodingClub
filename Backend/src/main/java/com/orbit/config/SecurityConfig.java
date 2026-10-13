@@ -1,11 +1,15 @@
 package com.orbit.config;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
@@ -43,13 +47,29 @@ public class SecurityConfig {
   }
 
   @Bean
+  CorsConfigurationSource corsConfigurationSource(
+      @Value("${orbit.cors-origins:http://localhost:5173}") String configuredOrigins) {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Arrays.stream(configuredOrigins.split(","))
+        .map(String::trim)
+        .filter(origin -> !origin.isEmpty())
+        .toList());
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
+
+  @Bean
   DefaultSecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtFilter) throws Exception {
     http.csrf(c -> c.disable())
     .cors(Customizer.withDefaults())
     .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
     .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-        .requestMatchers(HttpMethod.GET, "/api/site","/upload/**").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/site", "/api/images/**", "/uploads/**").permitAll()
         .requestMatchers("/api/auth/**").permitAll()
         .requestMatchers("/api/admin/**").hasRole("ADMIN")
         .requestMatchers("/api/student/**").hasRole("STUDENT")

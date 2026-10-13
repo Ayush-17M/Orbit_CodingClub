@@ -1,59 +1,92 @@
-import React, { useState, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../../styles/student-auth.css';
 import { fetchApi } from '../../utils/api';
 
+const emptyLoginForm = { email: '', password: '' };
+const emptyRegisterForm = { name: '', email: '', password: '', confirmPassword: '' };
 
-export default function StudentAuth() {
-  const [ useStatus, setStatus ] = useState(0);
+export default function StudentAuth({ mode = 'login' }) {
+  const isLogin = mode === 'login';
+  const navigate = useNavigate();
+  const [loginForm, setLoginForm] = useState(emptyLoginForm);
+  const [registerForm, setRegisterForm] = useState(emptyRegisterForm);
+  const [status, setStatus] = useState({ type: '', message: '' });
+  const [submitting, setSubmitting] = useState(false);
 
-  // Inside handleLogin:
-  const handleLogin = async (event) {
+  const updateLoginForm = (event) => {
+    const { name, value } = event.target;
+    setLoginForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const updateRegisterForm = (event) => {
+    const { name, value } = event.target;
+    setRegisterForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const handleLogin = async (event) => {
     event.preventDefault();
-    setStatus({ type: '', message: ''});
+    setStatus({ type: '', message: '' });
+    setSubmitting(true);
 
     try {
-      const data = await fetchApi('/auth/sutdent/login', {
+      const data = await fetchApi('/auth/student/login', {
         method: 'POST',
-        body: JSON.stringify({email: loginForm.email, password: loginForm.password })
+        body: JSON.stringify({
+          email: loginForm.email,
+          password: loginForm.password,
+        }),
       });
-      
-      // store user data and token
-      sessionStorage.setItem('orbit-student-session', JSON.stringify(data));
-      sessionStorage.setItem('orbit-token', data.token);
 
-      setStatus({ type: 'success', message: 'Login successful. Redirection...'});
-      
-      setTimeout(() => navigation('/student/dashboard'), 600);
-
+      sessionStorage.setItem('orbit-student-session', JSON.stringify({
+        name: data.name,
+        email: data.login,
+        role: data.role,
+      }));
+      sessionStorage.setItem('orbit_token', data.token);
+      setStatus({ type: 'success', message: 'Login successful. Redirecting...' });
+      navigate('/student/dashboard');
     } catch (error) {
-      setStatus({type: 'error', message: error.message || 'Invalid credentials' });
-    };
-  }
+      setStatus({ type: 'error', message: error.message || 'Unable to log in.' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-  // Inside handleRegister:
   const handleRegister = async (event) => {
     event.preventDefault();
+    setStatus({ type: '', message: '' });
 
+    if (registerForm.password !== registerForm.confirmPassword) {
+      setStatus({ type: 'error', message: 'Passwords do not match.' });
+      return;
+    }
+
+    setSubmitting(true);
     try {
       const data = await fetchApi('/auth/student/register', {
         method: 'POST',
         body: JSON.stringify({
-          name: registerForm.name;
+          name: registerForm.name,
           email: registerForm.email,
-          password: registerForm.password
+          password: registerForm.password,
         }),
       });
 
-      sessionStorage.setItem('orbit-student-session', JSON.stringify(data));
-    setStatus({ type: 'success', message: 'Account created successfully. Redirecting...' });
-    setTimeout(() => navigate('/student/dashboard'), 700);
-  } catch (error) {
-    setStatus({ type: 'error', message: error.message });
+      sessionStorage.setItem('orbit-student-session', JSON.stringify({
+        name: data.name,
+        email: data.login,
+        role: data.role,
+      }));
+      sessionStorage.setItem('orbit_token', data.token);
+      setStatus({ type: 'success', message: 'Account created successfully. Redirecting...' });
+      navigate('/student/dashboard');
+    } catch (error) {
+      setStatus({ type: 'error', message: error.message || 'Unable to create your account.' });
+    } finally {
+      setSubmitting(false);
     }
-
-  }
- 
+  };
 
   return (
     <div className="student-auth-shell">
@@ -114,10 +147,14 @@ export default function StudentAuth() {
                 />
               </div>
 
-              <button className="student-auth-submit" type="submit">Login</button>
-              <div className={`student-auth-status ${status.type}`}>
-                {status.message}
-              </div>
+              <button className="student-auth-submit" type="submit" disabled={submitting}>
+                {submitting ? 'Please wait...' : 'Login'}
+              </button>
+              {status.message && (
+                <div className={`student-auth-status ${status.type}`} role="status">
+                  {status.message}
+                </div>
+              )}
 
               <div className="student-auth-footer">
                 New here? <Link to="/student/register">Create an account</Link>
@@ -134,6 +171,7 @@ export default function StudentAuth() {
                   value={registerForm.name}
                   onChange={updateRegisterForm}
                   placeholder="Your full name"
+                  autoComplete="name"
                   required
                 />
               </div>
@@ -153,19 +191,6 @@ export default function StudentAuth() {
               </div>
 
               <div className="student-field-group">
-                <label htmlFor="student-college">College / Institution</label>
-                <input
-                  id="student-college"
-                  type="text"
-                  name="college"
-                  value={registerForm.college}
-                  onChange={updateRegisterForm}
-                  placeholder="College / Institute"
-                  required
-                />
-              </div>
-
-              <div className="student-field-group">
                 <label htmlFor="student-password">Password</label>
                 <input
                   id="student-password"
@@ -173,8 +198,9 @@ export default function StudentAuth() {
                   name="password"
                   value={registerForm.password}
                   onChange={updateRegisterForm}
-                  placeholder="Minimum 6 characters"
+                  placeholder="At least 8 characters"
                   autoComplete="new-password"
+                  minLength={8}
                   required
                 />
               </div>
@@ -189,14 +215,19 @@ export default function StudentAuth() {
                   onChange={updateRegisterForm}
                   placeholder="Confirm your password"
                   autoComplete="new-password"
+                  minLength={8}
                   required
                 />
               </div>
 
-              <button className="student-auth-submit" type="submit">Create Account</button>
-              <div className={`student-auth-status ${status.type}`}>
-                {status.message}
-              </div>
+              <button className="student-auth-submit" type="submit" disabled={submitting}>
+                {submitting ? 'Please wait...' : 'Create Account'}
+              </button>
+              {status.message && (
+                <div className={`student-auth-status ${status.type}`} role="status">
+                  {status.message}
+                </div>
+              )}
 
               <div className="student-auth-footer">
                 Already a member? <Link to="/student/login">Login here</Link>

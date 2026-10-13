@@ -1,26 +1,33 @@
-# TechKshitiz Premium React Website
+# Orbit Coding Club Website
 
-Frontend-only React/Vite site with GSAP, ScrollTrigger, React Three Fiber, Lenis, responsive navigation, gallery lightbox, editable localStorage CMS and demo admin login.
+React/Vite frontend backed by the Spring Boot API and MySQL database.
 
-## Run
+## Run the backend
+
+Create the `orbit` MySQL database, configure the backend database credentials and admin password in `Backend/src/main/resources/application.properties` (or environment variables), then start the backend from the `Backend` folder:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+The backend listens on `http://localhost:8080` by default. Set `CORS_ORIGINS` if the frontend is served from a different origin.
+
+## Run the frontend
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Demo admin
+The frontend API defaults to `http://localhost:8080/api`. Set `VITE_API_BASE_URL` when the backend uses a different address.
 
-Open `/admin/login`.
+## Admin and content storage
 
-- Username: `admin`
-- Password: `techkshitiz-demo`
+Sign in at `/admin/login` with the backend-configured admin account (`ADMIN_USERNAME` and `ADMIN_PASSWORD`). Admin changes are authorized by the backend using a JWT.
 
-These are demo-only frontend credentials. Connect real authentication/backend before production.
+Use the **Wings** tab to manage each wing coordinator. Use **Events** to add, update, and delete events and upload their pictures. Event metadata and site content are stored in MySQL; uploaded image bytes are stored in the `stored_images` table. Public gallery event entries show the selected wing and its coordinator.
 
-## Content storage
-
-Public pages and `/admin` share `localStorage`. Use **Save Changes**, **Reset**, **Export Data**, and **Import Data** in Admin.
+The admin **Save Changes**, **Reset**, **Export Data**, and **Import Data** tools are available for the site content.
 
 ## Notes
 
